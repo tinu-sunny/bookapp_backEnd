@@ -1,0 +1,91 @@
+const user = require('../models/userModel')
+const jwt = require('jsonwebtoken')
+// registration logic
+
+exports.userRegister = async (req,res)=>{
+   try{
+        
+     const {username,email,password}=req.body
+
+     const existingUser = await user.findOne({email})
+
+     if(existingUser){
+       res.status(402).json("user  existing")
+        
+     }
+
+     else{
+       
+        const newUser = new user({username,email,password})
+        await newUser.save()
+        res.status(200).json({ message:"resgi",newUser})
+        
+     }
+
+   }
+
+   catch(err){
+    console.log(err);
+    
+   }
+}
+
+// user login 
+
+
+exports.userLogin = async (req,res)=>{
+    
+         const {email,password}=req.body
+
+         const activeUser = await user.findOne({email})
+    try{
+         if(activeUser && activeUser.password !=password){
+            
+            res.status(401).json('password miss match')
+         }
+         else if(activeUser && activeUser.password ===password){
+                  
+            const token = jwt.sign({userMail:activeUser.email,role:activeUser.role},process.env.jwtkey)
+            console.log(token);
+            
+
+            res.status(200).json({message:"logined",activeUser,token})
+         }
+         else{
+            res.status(404).json('not vaild user')
+         }
+
+
+    }
+
+    catch(err){
+        console.log(err);
+        
+    }
+}
+
+
+
+exports.googleEmailLogin=async(req,res)=>{
+
+   const{email,password,profile,username}=req.body
+
+   try{
+      const existingUser =await user.findOne({email})
+      if(existingUser){
+         const token = jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.jwtkey)
+            console.log(token);
+               res.status(200).json({message:"logined",existingUser,token})
+      }
+      else{
+          const newUser = new user({username,email,password,profile})
+        await newUser.save()
+           const token = jwt.sign({userMail:newUser.email,role:newUser.role},process.env.jwtkey)
+            console.log(token);
+        res.status(200).json({ message:"login",existingUser:newUser,token})
+      }
+   }
+   catch(err){
+      res.status(500).json(err)
+   }
+}
