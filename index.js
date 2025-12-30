@@ -20,6 +20,7 @@ bookstore.use(cors())
 bookstore.use(express.json())   
 bookstore.use(appMiddleware) 
 bookstore.use(route)
+bookstore.use('/uploads',express.static('./uploads'))
 
 bookstore.get('/',(req,res)=>{
     res.send('Welcome tho bookstore backend')
