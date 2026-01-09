@@ -22,8 +22,8 @@ exports.addbook = async (req, res) => {
     const UploadedImages = [];
     req.files.map((item) => UploadedImages.push(item.filename));
     console.log(UploadedImages);
-    console.log(req.payload);
-    const userMail = req.payload;
+    console.log("core",req.payload);
+    const{ userMail,role} = req.payload;
 
     const existingBook = await books.findOne({ title, userMail });
     console.log(existingBook);
@@ -74,11 +74,34 @@ exports.latestBooks = async(req,res)=>{
 
   try{
     const lastAddbooks = await books.find().sort({_id:-1}).limit(4);
-    res.status(200).json({message:"last add boook details",lastAddbooks}) 
+    res.status(200).json({message:"last add books",lastAddbooks}) 
   }
   catch(err){
     console.log(err);
     
     res.status(400).json("error",err)
   }
+}
+
+exports.viewBook = async(req,res)=>{
+  const {id}=req.params
+  console.log(req.params);
+  console.log(id);
+  try{
+console.log('yfr');
+
+  const bookdata = await books.findOne({ _id:id})
+  // console.log(bookdata);
+
+  res.status(200).json({message:"book",bookdata}) 
+  
+  }
+
+  catch(err){
+    console.log(err);
+    res.send("errr")
+    
+  }
+  
+  
 }

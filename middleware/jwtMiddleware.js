@@ -16,8 +16,18 @@ const jwtMiddleware = (req, res, next) => {
 
   try {
     const jwtVerification = jwt.verify(token, process.env.jwtkey);
-    console.log(jwtVerification);
-    req.payload = jwtVerification.userMail;
+    console.log(jwtVerification.userMail);  
+   // Extract needed info
+  const userdata = {
+    userMail: jwtVerification.userMail,
+    role: jwtVerification.role
+  };
+
+  console.log('JWT payload:', userdata);
+
+  // Attach to request for later use
+  req.payload = userdata;
+  
   } catch (err) {
     res.status(401).json("authorization Error", err);
   }
