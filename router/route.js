@@ -19,5 +19,6 @@ route.get('/api/lastAddbooks',bookController.latestBooks)
 route.get('/api/viewbooks/:id',jwtMiddleware,bookController.viewBook)
 route.get('/api/view-users-admin',jwtMiddleware,roleMiddleware("admin"),adminController.useradminview)
 route.get('/api/view-allbooks-admin',jwtMiddleware,roleMiddleware("admin"),adminController.getBooks)
+route.put('/api/profile-admin-update',jwtMiddleware,multerConfig.single('profile'),roleMiddleware("admin"),adminController.profileUpdate)
 
 module.exports = route
