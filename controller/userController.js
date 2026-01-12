@@ -107,3 +107,24 @@ else{
    res.status(403).json({message:"data not found"})
 }  
 }
+
+
+exports.profileUpdate = async(req,res)=>{
+    const {username,password,bio,profile}=req.body
+    const {userMail , role}=req.payload 
+     const UploadedProfile = req.file? req.file.filename:profile
+     console.log(UploadedProfile);
+     
+    try{
+       const update = await user.findOneAndUpdate({email:userMail},{$set:{username,password,bio,profile:UploadedProfile}},{new:true})
+       await update.save()
+       console.log(update);
+       
+       res.status(200).json({message:"updated",update})
+    }
+    catch(err){
+        console.log(err);
+        res.status(403).json({message:'err'+err})
+        
+    }
+}
