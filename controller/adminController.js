@@ -50,7 +50,7 @@ exports.profileUpdate = async(req,res)=>{
     }
     catch(err){
         console.log(err);
-        res.send('err',err)
+        res.status(403).json({message:'err'+err})
         
     }
 }

@@ -10,7 +10,7 @@ const jwtMiddleware = (req, res, next) => {
   if (token) {
     console.log("token");
   } else {
-    console.log("no -token");
+    console.log("no-token");
   }
   console.log(token);
 

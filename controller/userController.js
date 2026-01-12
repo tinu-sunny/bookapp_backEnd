@@ -89,3 +89,21 @@ exports.googleEmailLogin=async(req,res)=>{
       res.status(500).json(err)
    }
 }
+
+
+
+
+exports.viewactiveusers = async (req,res)=>{
+
+  const {userMail} =req.payload
+  console.log(userMail);
+
+  const userdata = await user.findOne({email:userMail})
+
+  if(userdata){
+   res.status(200).json({message:"active user",userdata})
+  }
+else{
+   res.status(403).json({message:"data not found"})
+}  
+}
