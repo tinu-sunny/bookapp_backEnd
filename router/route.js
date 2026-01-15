@@ -22,5 +22,6 @@ route.get('/api/view-allbooks-admin',jwtMiddleware,roleMiddleware("admin"),admin
 route.put('/api/profile-admin-update',jwtMiddleware,multerConfig.single('profile'),roleMiddleware("admin"),adminController.profileUpdate)
 route.get('/api/viewactiveuser',jwtMiddleware,userController.viewactiveusers)
 route.put('/api/profile-user-update',jwtMiddleware,multerConfig.single('profile'),userController.profileUpdate)
+route.put('/api/Payment',jwtMiddleware,bookController.payment)
 
 module.exports = route
