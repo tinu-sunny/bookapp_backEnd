@@ -1,4 +1,5 @@
-const books = require("../models/bookModel");
+
+const books =  require('../models/bookModel')
 
 const stripe = require('stripe')(process.env.paymentKey);
 
@@ -120,33 +121,35 @@ console.log('yfr');
 exports.payment = async (req,res)=>{
    console.log('inside  payment');
    const {bookdetails} = req.body
-   const {userMail,role}= req.payload
-   
-  try{
-     const existingbook = await books.findByIdAndUpdate(bookdetails._id,{ title:bookdetails.title,
-        author:bookdetails.author,
-        noofpages:bookdetails.noofpages,
-        price:bookdetails.price,
-        dprice:bookdetails.dprice,
-        abstract:bookdetails.abstract,
-        publisher:bookdetails.publisher,
-        isbn:bookdetails.isbn,
-        category:bookdetails.category,
-        language:bookdetails.language,
-        imageUrl:bookdetails.imageUrl,
-        userMail:bookdetails.userMail,
-        UploadedImages:bookdetails.UploadedImages,
-        status:'sold',
-        brought:userMail
+   const email= req.payload?.userMail
+   console.log(email);
+   console.log(bookdetails); 
+try{
+const existingbook = await books.findByIdAndUpdate(bookdetails._id,{
+  title:bookdetails.title,
+  author:bookdetails.author,
+  noofpages:bookdetails.noofpages,
+  imageUrl:bookdetails.imageUrl,
+  price:bookdetails.price,
+  dprice:bookdetails.dprice,
+  abstract:bookdetails.abstract,
+  publisher:bookdetails.publisher,
+  language:bookdetails.language,
+  isbn:bookdetails.isbn,
+  category:bookdetails.category,
+  UploadedImages:bookdetails.UploadedImages, 
+  status:"sold",
+  userMail:bookdetails.userMail,
+  brought:email
+},{new:true})
 
-      },{new:true})
-      const line_items = [
+const line_items = [
       {
         price_data: {
           currency: "usd",
           product_data: {
             name: bookdetails.title,
-            description: `${bookdetails.author} | ${bookdetails.publisher}`,
+            description:`${bookdetails.author} || ${bookdetails.publisher}`,
             images: [bookdetails.imageUrl],
             metadata: {
               title: bookdetails.title,
@@ -160,10 +163,9 @@ exports.payment = async (req,res)=>{
               language: bookdetails.language,
               isbn: bookdetails.isbn,
               category: bookdetails.category,
-              UploadedImages: [bookdetails.UploadedImages],
-              status: "sold",
+               status: "sold",
               userMail: bookdetails.userMail,
-              brought: userMail,
+              brought: email,
             },
           },
           unit_amount: Math.round(Number(bookdetails.dprice) * 100),
@@ -172,7 +174,6 @@ exports.payment = async (req,res)=>{
       },
     ];
 
-   
 const session = await stripe.checkout.sessions.create({
   payment_method_types:['card'],
   success_url: 'http://localhost:5173/payment-success',
@@ -180,13 +181,15 @@ const session = await stripe.checkout.sessions.create({
   line_items,
   mode: 'payment',
 });
-   res.status(200).json({message:"payement success"})
-  }
-  catch(err){
-    console.log(err);
-    
-    res.status(500).json({message:'unsccessfull',dataerr:err})
-  }
+
+  res.status(200).json({message:"success",session})
+
+}
+catch(err){
+  console.log(err);
+  
+  res.status(500).json({message:"erroe inside the try of payment",err})
+}
 
   
 }
